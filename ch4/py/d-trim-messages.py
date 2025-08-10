@@ -28,7 +28,7 @@ messages = [
 
 # Create trimmer
 trimmer = trim_messages(
-    max_tokens=65,
+    max_tokens=50,
     strategy="last",
     token_counter=ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
