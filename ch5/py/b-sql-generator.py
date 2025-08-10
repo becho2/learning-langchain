@@ -4,6 +4,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 from dotenv import load_dotenv
+from pprint import pprint
 
 # Load environment variables
 load_dotenv()
@@ -78,7 +79,7 @@ def explain_sql(state: State) -> State:
     }
 
 
-builder = StateGraph(State, input=Input, output=Output)
+builder = StateGraph(State, input_schema=Input, output_schema=Output)
 builder.add_node("generate_sql", generate_sql)
 builder.add_node("explain_sql", explain_sql)
 builder.add_edge(START, "generate_sql")
@@ -86,7 +87,7 @@ builder.add_edge("generate_sql", "explain_sql")
 builder.add_edge("explain_sql", END)
 
 graph = builder.compile()
-
+# graph.get_graph().draw_mermaid_png(output_file_path="graph.png")
 # Example usage
-result = graph.invoke({"user_query": "What is the total sales for each product?"})
-print(result)
+result = graph.invoke({"user_query": "각 품목의 판매량을 구해주세요."})
+pprint(result)
