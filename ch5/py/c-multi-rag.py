@@ -6,6 +6,7 @@ from langchain_core.vectorstores.in_memory import InMemoryVectorStore
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 import os
 from dotenv import load_dotenv
+from pprint import pprint
 
 # Load environment variables
 load_dotenv()
@@ -135,7 +136,7 @@ def generate_answer(state: State) -> State:
     }
 
 
-builder = StateGraph(State, input=Input, output=Output)
+builder = StateGraph(State, input_schema=Input, output_schema=Output)
 builder.add_node("router", router_node)
 builder.add_node("retrieve_medical_records", retrieve_medical_records)
 builder.add_node("retrieve_insurance_faqs", retrieve_insurance_faqs)
@@ -149,6 +150,6 @@ builder.add_edge("generate_answer", END)
 graph = builder.compile()
 
 # Example usage
-input = {"user_query": "Am I covered for COVID-19 treatment?"}
+input = {"user_query": "내가 2015년에 받았던 수술이 무슨 수술이었지?"}
 for chunk in graph.stream(input):
-    print(chunk)
+    pprint(chunk)
