@@ -37,7 +37,9 @@ builder.add_edge("chatbot", END)
 
 graph = builder.compile()
 
+# graph.get_graph().draw_mermaid_png(output_file_path="graph.png")
+
 # Run the graph
-input = {"messages": [HumanMessage("hi!")]}
+input = {"messages": [HumanMessage("Do you know about the LangGraph?")]}
 for chunk in graph.stream(input):
     print(chunk)
