@@ -1,8 +1,17 @@
 from typing import Annotated, TypedDict
+import warnings
+import os
+
+# Suppress urllib3 OpenSSL warnings
+warnings.filterwarnings('ignore', category=DeprecationWarning)
+warnings.filterwarnings('ignore', message='urllib3 v2 only supports OpenSSL')
+
+# Disable LangSmith tracing to avoid authentication errors
+os.environ['LANGCHAIN_TRACING_V2'] = 'false'
+os.environ['LANGSMITH_API_KEY'] = 'dummy'  # Prevents missing key warning
 
 from langchain_core.messages import HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
-import os
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START, END, add_messages
 from langgraph.checkpoint.memory import MemorySaver
@@ -39,10 +48,10 @@ graph = builder.compile(checkpointer=MemorySaver())
 thread1 = {"configurable": {"thread_id": "1"}}
 
 # Run with persistence
-result_1 = graph.invoke({"messages": [HumanMessage("hi, my name is Jack!")]}, thread1)
+result_1 = graph.invoke({"messages": [HumanMessage("안녕? 내 이름은 참참이야!")]}, thread1)
 print(result_1)
 
-result_2 = graph.invoke({"messages": [HumanMessage("what is my name?")]}, thread1)
+result_2 = graph.invoke({"messages": [HumanMessage("내 이름이 뭐게?")]}, thread1)
 print(result_2)
 
 # Get state
