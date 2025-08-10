@@ -4,9 +4,13 @@ from langchain.schema import Document
 from langgraph.graph import END, StateGraph, START
 from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain import hub
-from langchain_openai import ChatOpenAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 
 class GraphState(TypedDict):
@@ -54,7 +58,10 @@ def indexing(state):
 # Add to vectorDB
     vectorstore = InMemoryVectorStore.from_documents(
         documents=doc_splits,
-        embedding=OpenAIEmbeddings(),
+        embedding=GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001",
+            google_api_key=os.getenv("GOOGLE_API_KEY")
+        ),
     )
     return {"vectorstore": vectorstore}
 
@@ -69,7 +76,11 @@ def retrieve_and_generate(state):
     retriever = vectorstore.as_retriever()
 
     prompt = hub.pull("rlm/rag-prompt")
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0,
+        google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
 
     # fetch relevant documents
     docs = retriever.invoke(question)  # format prompt

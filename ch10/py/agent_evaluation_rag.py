@@ -1,6 +1,11 @@
 from typing import Optional
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langsmith import Client, evaluate, aevaluate
 from langsmith.evaluation import EvaluationResults
 from pydantic import BaseModel, Field
@@ -11,7 +16,11 @@ client = Client()
 
 DEFAULT_DATASET_NAME = "langchain-blogs-qa"
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 EVALUATION_PROMPT = f"""You are a teacher grading a quiz.
 

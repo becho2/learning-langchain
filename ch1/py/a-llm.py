@@ -1,6 +1,14 @@
-from langchain_openai.chat_models import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
 
-model = ChatOpenAI(model="gpt-3.5-turbo")
+# Load environment variables
+load_dotenv()
+
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 response = model.invoke("The sky is")
 print(response.content)

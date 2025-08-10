@@ -1,9 +1,13 @@
 from langchain_core.runnables import chain
-from langchain_openai.chat_models import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 
 
-model = ChatOpenAI(model="gpt-3.5-turbo")
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 
 template = ChatPromptTemplate.from_messages(

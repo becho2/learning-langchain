@@ -1,13 +1,17 @@
 # pip install lark
 
+import os
+from dotenv import load_dotenv
 from langchain.chains.query_constructor.base import AttributeInfo
 from langchain.retrievers.self_query.base import SelfQueryRetriever
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_postgres.vectorstores import PGVector
 from langchain_core.documents import Document
+
+load_dotenv()
 
 # See docker command above to launch a postgres instance with pgvector enabled.
 connection = "postgresql+psycopg://langchain:langchain@localhost:6024/langchain"
@@ -45,7 +49,7 @@ docs = [
 ]
 
 # Create embeddings for the documents
-embeddings_model = OpenAIEmbeddings()
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 vectorstore = PGVector.from_documents(
     docs, embeddings_model, connection=connection)
@@ -75,7 +79,7 @@ fields = [
 ]
 
 description = "Brief summary of a movie"
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
 retriever = SelfQueryRetriever.from_llm(llm, vectorstore, description, fields)
 
 # This example only specifies a filter

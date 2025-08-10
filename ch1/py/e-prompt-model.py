@@ -1,4 +1,9 @@
-from langchain_openai.chat_models import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langchain_core.prompts import PromptTemplate
 
 # both `template` and `model` can be reused many times
@@ -11,7 +16,10 @@ Question: {question}
 
 Answer: """)
 
-model = ChatOpenAI(model="gpt-3.5-turbo")
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 # `prompt` and `completion` are the results of using template and model once
 

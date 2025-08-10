@@ -1,10 +1,14 @@
+import os
+from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_postgres.vectorstores import PGVector
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import chain
+
+load_dotenv()
 
 
 # See docker command above to launch a postgres instance with pgvector enabled.
@@ -17,7 +21,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 documents = text_splitter.split_documents(raw_documents)
 
 # Create embeddings for the documents
-embeddings_model = OpenAIEmbeddings()
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 db = PGVector.from_documents(
     documents, embeddings_model, connection=connection)
@@ -32,7 +36,7 @@ perspectives_prompt = ChatPromptTemplate.from_template(
     Provide these alternative questions separated by newlines. 
     Original question: {question}""")
 
-llm = ChatOpenAI(model="gpt-3.5-turbo")
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 
 def parse_queries_output(message):

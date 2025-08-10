@@ -1,9 +1,13 @@
 from contextlib import contextmanager
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langchain_chroma import Chroma
 from langchain_core.embeddings import Embeddings
 from langchain_core.runnables import RunnableConfig
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import SupabaseVectorStore
 from langchain_chroma import Chroma
 from supabase import create_client
@@ -17,8 +21,12 @@ def make_text_encoder(model: str) -> Embeddings:
     """Connect to the configured text encoder."""
     provider, model = model.split("/", maxsplit=1)
     if provider == "openai":
-        from langchain_openai import OpenAIEmbeddings
-        return OpenAIEmbeddings(model=model)
+        from langchain_google_genai import GoogleGenerativeAIEmbeddings
+        # Use Google Gemini instead of OpenAI
+        return GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001",
+            google_api_key=os.getenv("GOOGLE_API_KEY")
+        )
     else:
         raise ValueError(f"Unsupported embedding provider: {provider}")
 

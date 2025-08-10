@@ -14,9 +14,13 @@ docker run \
 
 """
 
+import os
+from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+load_dotenv()
 from langchain_postgres.vectorstores import PGVector
 from langchain_core.documents import Document
 import uuid
@@ -32,7 +36,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 documents = text_splitter.split_documents(raw_documents)
 
 # Create embeddings for the documents
-embeddings_model = OpenAIEmbeddings()
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 db = PGVector.from_documents(
     documents, embeddings_model, connection=connection)

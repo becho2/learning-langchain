@@ -1,6 +1,11 @@
 from agent_sql_graph import builder
 from langchain import hub
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langsmith.evaluation import evaluate
 from langsmith.schemas import Example, Run
 from langchain_core.runnables import Runnable
@@ -8,8 +13,8 @@ from agent_sql_graph import assistant_runnable
 import uuid
 _printed = set()
 thread_id = str(uuid.uuid4())
-experiment_prefix = "sql-agent-gpt4o"
-metadata = "chinook-gpt-4o-base-case-agent"
+experiment_prefix = "sql-agent-gemini"
+metadata = "chinook-gemini-2.5-flash-base-case-agent"
 config = {
     "configurable": {
         # Checkpoints are accessed by thread_id
@@ -41,7 +46,11 @@ def answer_evaluator(run, example) -> dict:
     prediction = run.outputs["response"]
 
     # LLM grader
-    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0,
+        google_api_key=os.getenv("GOOGLE_API_KEY")
+    )
 
     # Structured prompt
     answer_grader = grade_prompt_answer_accuracy | llm

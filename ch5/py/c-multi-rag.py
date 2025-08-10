@@ -3,15 +3,31 @@ from typing import Annotated, Literal, TypedDict
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.vectorstores.in_memory import InMemoryVectorStore
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 
-embeddings = OpenAIEmbeddings()
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 # useful to generate SQL query
-model_low_temp = ChatOpenAI(temperature=0.1)
+model_low_temp = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.1,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 # useful to generate natural language outputs
-model_high_temp = ChatOpenAI(temperature=0.7)
+model_high_temp = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.7,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 
 class State(TypedDict):

@@ -1,7 +1,15 @@
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai.chat_models import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
 
-model = ChatOpenAI()
+# Load environment variables
+load_dotenv()
+
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 system_msg = SystemMessage(
     "You are a helpful assistant that responds to questions with three exclamation marks."
 )

@@ -6,7 +6,12 @@ from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from langchain_core.vectorstores.in_memory import InMemoryVectorStore
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
@@ -22,8 +27,15 @@ def calculator(query: str) -> str:
 search = DuckDuckGoSearchRun()
 tools = [search, calculator]
 
-embeddings = OpenAIEmbeddings()
-model = ChatOpenAI(temperature=0.1)
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.1,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 tools_retriever = InMemoryVectorStore.from_documents(
     [Document(tool.description, metadata={"name": tool.name}) for tool in tools],

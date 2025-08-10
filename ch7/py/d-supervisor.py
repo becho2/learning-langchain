@@ -1,6 +1,11 @@
 from typing import Literal
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langgraph.graph import StateGraph, MessagesState, START
 from pydantic import BaseModel
 
@@ -10,7 +15,11 @@ class SupervisorDecision(BaseModel):
 
 
 # Initialize model
-model = ChatOpenAI(model="gpt-4", temperature=0)
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 model = model.with_structured_output(SupervisorDecision)
 
 # Define available agents

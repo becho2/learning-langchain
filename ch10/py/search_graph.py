@@ -7,7 +7,12 @@ from langgraph.graph import END, StateGraph, START
 from retrieve_and_grade import retrieval_grader
 from retrieve_and_grade import retriever
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain import hub  # Prompt
@@ -15,7 +20,11 @@ from langchain import hub  # Prompt
 prompt = hub.pull("rlm/rag-prompt")
 
 # LLM
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 rag_chain = prompt | llm | StrOutputParser()
 

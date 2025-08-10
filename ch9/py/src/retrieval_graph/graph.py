@@ -2,7 +2,12 @@ from typing import Literal
 from langchain.hub import pull
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import HumanMessage
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel
 

@@ -5,7 +5,12 @@ from uuid import uuid4
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.messages import AIMessage, HumanMessage, ToolCall
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
@@ -20,7 +25,11 @@ def calculator(query: str) -> str:
 
 search = DuckDuckGoSearchRun()
 tools = [search, calculator]
-model = ChatOpenAI(temperature=0.1).bind_tools(tools)
+model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.1,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+).bind_tools(tools)
 
 
 class State(TypedDict):

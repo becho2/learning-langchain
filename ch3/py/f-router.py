@@ -1,9 +1,13 @@
 
+import os
+from dotenv import load_dotenv
 from typing import Literal
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.runnables import RunnableLambda
+
+load_dotenv()
 
 
 # Data model class
@@ -17,7 +21,7 @@ class RouteQuery(BaseModel):
 
 # Prompt template
 # LLM with function call
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=os.getenv("GOOGLE_API_KEY"))
 
 """
 with_structured_output: Model wrapper that returns outputs formatted to match the given schema.

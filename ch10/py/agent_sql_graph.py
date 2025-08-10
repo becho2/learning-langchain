@@ -11,17 +11,26 @@ from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.agents import tool
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from langchain_community.utilities import SQLDatabase
 
 db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 print(db.dialect)
 print(db.get_usable_table_names())
 db.run("SELECT * FROM Artist LIMIT 10;")
-# gpt4o
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
-experiment_prefix = "sql-agent-gpt4o"
-metadata = "Chinook, gpt-4o agent"
+# gemini-2.5-flash
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
+experiment_prefix = "sql-agent-gemini"
+metadata = "Chinook, gemini-2.5-flash agent"
 # SQL toolkit
 toolkit = SQLDatabaseToolkit(db=db, llm=llm)
 tools = toolkit.get_tools()

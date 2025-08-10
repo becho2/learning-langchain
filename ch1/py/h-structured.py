@@ -1,4 +1,9 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from pydantic import BaseModel
 
 
@@ -11,7 +16,11 @@ class AnswerWithJustification(BaseModel):
     """Justification for the answer"""
 
 
-llm = ChatOpenAI(model="gpt-3.5", temperature=0)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0,
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 structured_llm = llm.with_structured_output(AnswerWithJustification)
 
 response = structured_llm.invoke(
