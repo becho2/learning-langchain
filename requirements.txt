@@ -1,0 +1,19 @@
+# Core dependencies
+langchain
+langchain-core
+langchain-community
+langchain-google-genai
+langgraph
+
+# Environment and utilities
+python-dotenv
+
+# Vector stores
+langchain-postgres
+pgvector
+psycopg
+chromadb
+
+# Additional dependencies
+httpx
+beautifulsoup4
