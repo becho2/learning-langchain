@@ -7,14 +7,21 @@ import {
   START,
 } from "@langchain/langgraph";
 import { ToolNode, toolsCondition } from "@langchain/langgraph/prebuilt";
-import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage } from "@langchain/core/messages";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { config } from "dotenv";
+
+config();
+
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
 const search = new DuckDuckGoSearch();
 const calculator = new Calculator();
 const tools = [search, calculator];
-const model = new ChatOpenAI({
+const model = new ChatGoogleGenerativeAI({
   temperature: 0.1,
+  apiKey: GOOGLE_API_KEY,
+  model: "gemini-2.5-flash",
 }).bindTools(tools);
 
 const annotation = Annotation.Root({
