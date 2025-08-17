@@ -8,8 +8,9 @@ from typing import Annotated, TypedDict
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, ToolCall, AIMessage
 from pprint import pprint
+from uuid import uuid4
 
 load_dotenv()
 
@@ -60,10 +61,24 @@ def model_node(state: State) -> State:
   res = model.invoke(state["messages"])
   return {'messages': res}
 
+def first_model(state: State) -> State:
+  query = state['messages'][-1].content
+  search_tool_call = ToolCall(
+    name='duckduckgo_search',
+    args={
+      'query': query
+    },
+    id=uuid4().hex 
+  )
+  print(query)
+  return {'messages': AIMessage(content='', tool_calls=[search_tool_call])}
+
 builder = StateGraph(State)
+builder.add_node('first_model', first_model)
 builder.add_node('model', model_node)
 builder.add_node('tools', ToolNode(tools))
-builder.add_edge(START, 'model')
+builder.add_edge(START, 'first_model')
+builder.add_edge('first_model', 'tools')
 builder.add_conditional_edges('model', tools_condition)
 builder.add_edge('tools', 'model')
 
@@ -72,7 +87,7 @@ graph = builder.compile()
 # graph.get_graph().draw_mermaid_png(output_file_path="gsraph.png")
 
 input = {
-  'messages': [HumanMessage('손흥민과 김연아의 나이를 더하면 몇 살이야?')]
+  'messages': [HumanMessage("이승만 대통령이 대통령이 됐을 때 이승만과 김구의 나이는?")]
 }
 
 for c in graph.stream(input):
